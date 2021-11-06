@@ -9,3 +9,4 @@
 ## 注意事项
 1. 若需headless，需要自行修改构造函数nogui参数。
 2. 默认关闭了chromedriver的logging。
+3. 如果需要在Linux系统中运行，别忘了赋予chromedriver执行权限。
