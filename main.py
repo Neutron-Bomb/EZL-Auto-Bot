@@ -1,5 +1,6 @@
 import argparse
 import json
+import logging
 import os
 import smtplib
 from email.mime.text import MIMEText
@@ -13,9 +14,9 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 
 class HealthRep:
-    def __init__(self, gui=False, logging=False) -> None:
+    def __init__(self, gui=False, chromedriver_logging=False) -> None:
         chrome_options = webdriver.ChromeOptions()
-        if not logging:
+        if not chromedriver_logging:
             chrome_options.add_argument('--silent')
             chrome_options.add_argument("--log-level=3");
         
@@ -101,9 +102,15 @@ class HealthRep:
         return self.__flag
 
 def main():
+    logging.basicConfig(level=logging.INFO
+                        ,filename="daily.log"
+                        ,filemode="w"
+                        ,format="%(asctime)s %(message)s"
+                        ,datefmt="%Y-%m-%d %H:%M:%S")
+    
     parser = argparse.ArgumentParser(description='自动完成E浙理打卡')
     parser.add_argument('--gui', action='store_true', default=False, help='显示Chrome窗口')
-    parser.add_argument('--logging', action='store_true', default=False, help='启用ChromeDriver的日志')
+    parser.add_argument('--chromedriver_logging', action='store_true', default=False, help='启用ChromeDriver的日志')
     args = parser.parse_args()
     
     smtp = smtplib.SMTP('smtp.qq.com', 587)
@@ -112,7 +119,7 @@ def main():
         data = json.loads(f.read())
         smtp.login(data['address'], data['password'])
 
-    hr = HealthRep(gui=args.gui, logging=args.logging)
+    hr = HealthRep(gui=args.gui, chromedriver_logging=args.logging)
     with open('./essentials.json', 'r') as f:
         data = json.loads(f.read())
         tasks = Queue()
@@ -124,7 +131,7 @@ def main():
 
             user = tasks.get()
             if hr.login(user['username'],user['password']) and hr.do():
-                print('succeed: {}'.format(user['username']))
+                logging.info('succeed: {}'.format(user['username']))
                 max_try -= 10
                 email = MIMEText('今天不用你动手啦！')
                 email['Subject'] = '打卡成功啦！'
@@ -132,7 +139,7 @@ def main():
                 email['To'] = user['email']
                 smtp.sendmail(email['From'], email['To'], email.as_string())
             else:
-                print('failed: {}'.format(user['username']))
+                logging.info('failed: {}'.format(user['username']))
                 max_try -= 1
                 tasks.put(user)
 
@@ -143,6 +150,7 @@ def main():
             email['From'] = 'erohal@qq.com'
             email['To'] = user['email']
             smtp.sendmail(email['From'], email['To'], email.as_string())
+            logging.info('A email has been sent to {}({})'.format(user['username'], user['email']))
 
     smtp.close()
 
