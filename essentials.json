@@ -2,6 +2,7 @@
     {
         "username" : "2021316101119",
         "password" : "**********",
-        "email" : "1298870565@qq.com"
+        "email" : "1298870565@qq.com",
+        "enabled" : true
     }
 ]

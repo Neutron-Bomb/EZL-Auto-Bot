@@ -107,7 +107,7 @@ def main():
                         ,filemode="w"
                         ,format="%(asctime)s %(message)s"
                         ,datefmt="%Y-%m-%d %H:%M:%S")
-    
+                        
     parser = argparse.ArgumentParser(description='自动完成E浙理打卡')
     parser.add_argument('--gui', action='store_true', default=False, help='显示Chrome窗口')
     parser.add_argument('--chromedriver_logging', action='store_true', default=False, help='启用ChromeDriver的日志')
@@ -123,7 +123,7 @@ def main():
     with open('./essentials.json', 'r') as f:
         data = json.loads(f.read())
         tasks = Queue()
-        [tasks.put(user) for user in data]
+        [tasks.put(user) for user in data if user['enabled'] == True]
         max_try = tasks.qsize() * 10
         while not tasks.empty():
             if max_try <= 0:
