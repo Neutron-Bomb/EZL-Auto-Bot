@@ -119,7 +119,7 @@ def main():
         data = json.loads(f.read())
         smtp.login(data['address'], data['password'])
 
-    hr = HealthRep(gui=args.gui, chromedriver_logging=args.logging)
+    hr = HealthRep(gui=args.gui, chromedriver_logging=args.chromedriver_logging)
     with open('./essentials.json', 'r') as f:
         data = json.loads(f.read())
         tasks = Queue()
