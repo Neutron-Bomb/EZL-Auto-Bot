@@ -115,9 +115,12 @@ def main():
     
     smtp = smtplib.SMTP('smtp.qq.com', 587)
     smtp.starttls()
+    enable_email = False
     with open('./email_config.json') as f:
         data = json.loads(f.read())
-        smtp.login(data['address'], data['password'])
+        enable_email = data['enabled']
+        smtp.login(data['address'], data['password']) if enable_email else None
+        smtp.close() if not enable_email else None
 
     hr = HealthRep(gui=args.gui, chromedriver_logging=args.chromedriver_logging)
     with open('./essentials.json', 'r') as f:
@@ -133,11 +136,12 @@ def main():
             if hr.login(user['username'],user['password']) and hr.do():
                 logging.info('succeed: {}'.format(user['username']))
                 max_try -= 10
-                email = MIMEText('今天不用你动手啦！')
-                email['Subject'] = '打卡成功啦！'
-                email['From'] = 'erohal@qq.com'
-                email['To'] = user['email']
-                smtp.sendmail(email['From'], email['To'], email.as_string())
+                if enable_email:
+                    email = MIMEText('今天不用你动手啦！')
+                    email['Subject'] = '打卡成功啦！'
+                    email['From'] = 'erohal@qq.com'
+                    email['To'] = user['email']
+                    smtp.sendmail(email['From'], email['To'], email.as_string())
             else:
                 logging.info('failed: {}'.format(user['username']))
                 max_try -= 1
@@ -145,12 +149,13 @@ def main():
 
         while not tasks.empty():
             user = tasks.get()
-            email = MIMEText('今天需要自己打卡了呢！')
-            email['Subject'] = '尝试了很多次，打卡还是失败了！'
-            email['From'] = 'erohal@qq.com'
-            email['To'] = user['email']
-            smtp.sendmail(email['From'], email['To'], email.as_string())
-            logging.info('A email has been sent to {}({})'.format(user['username'], user['email']))
+            if enable_email:    
+                email = MIMEText('今天需要自己打卡了呢！')
+                email['Subject'] = '尝试了很多次，打卡还是失败了！'
+                email['From'] = 'erohal@qq.com'
+                email['To'] = user['email']
+                smtp.sendmail(email['From'], email['To'], email.as_string())
+                logging.info('A email has been sent to {}({})'.format(user['username'], user['email']))
 
     smtp.close()
 
