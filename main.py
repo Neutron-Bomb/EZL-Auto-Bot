@@ -139,7 +139,7 @@ def main():
                 if enable_email:
                     email = MIMEText('今天不用你动手啦！')
                     email['Subject'] = '打卡成功啦！'
-                    email['From'] = 'erohal@qq.com'
+                    email['From'] = data['address']
                     email['To'] = user['email']
                     smtp.sendmail(email['From'], email['To'], email.as_string())
             else:
@@ -152,7 +152,7 @@ def main():
             if enable_email:    
                 email = MIMEText('今天需要自己打卡了呢！')
                 email['Subject'] = '尝试了很多次，打卡还是失败了！'
-                email['From'] = 'erohal@qq.com'
+                email['From'] = data['address']
                 email['To'] = user['email']
                 smtp.sendmail(email['From'], email['To'], email.as_string())
                 logging.info('A email has been sent to {}({})'.format(user['username'], user['email']))
