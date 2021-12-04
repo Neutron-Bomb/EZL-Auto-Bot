@@ -60,37 +60,39 @@ class HealthRep:
         try:
             workflow = \
             [
-                '//*[@id="app"]/div/div[1]/div/div/div/div[1]/div/div/div/div/div/div[1]/div/div/div/div[2]/div/div/div[3]/div/div/div[4]/div/div/div[3]',
-                '//*[@id="col_1_row_11"]/span',
-                '//*[@id="col_2_row_6"]/div/div[2]/div',
-                '//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[34]/div[1]/div/div/div[1]/span',
-                '//*[@id="col_3_row_6"]/div/div[2]/div',
-                '//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[1]/div/div/div[1]/span',
-                '//*[@id="col_2_row_15"]/div/div/div/div/div[1]/div/div[1]',
-                '//*[@id="col_2_row_17"]/div/div/div/div/div[1]/div/div[1]',
-                '//*[@id="col_2_row_18"]/div/div/div/div/div[1]/div/div[1]',
-                '//*[@id="col_4_row_23"]/div/div/div/div/div[1]/div/div[1]',
-                '//*[@id="col_4_row_24"]/div/div/div/div/div[1]/div/div[1]',
-                '//*[@id="col_4_row_25"]/div/div/div/div/div[2]/div/div[1]',
-                '//*[@id="col_4_row_26"]/div/div/div/div/div[2]/div/div[1]',
-                '//*[@id="col_4_row_27"]/div/div/div/div/div[2]/div/div[1]',
-                '//*[@id="col_4_row_29"]/div/div/div/div/div[2]/div/div[1]',
-                '//*[@id="col_4_row_31"]/div/div/div/div/div[1]/div/div[1]',
-                '//*[@id="col_4_row_33"]/div/div/div/div/div[2]/div/div[1]',
-                '//*[@id="col_4_row_35"]/div/div/div/div/div[2]/div/div[1]',
-                '//*[@id="col_4_row_37"]/div/div/div/div/div[2]/div/div[1]',
-                '//*[@id="col_4_row_6"]/div/div[2]/div',
-                '//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[6]/div[1]/div/div/div[1]/span',
+                '//*[@id="app"]/div/div[1]/div/div/div/div[1]/div/div/div/div/div/div[1]/div/div/div/div[2]/div/div/div[3]/div/div/div[4]/div/div/div[3]', # 我要打卡
+                '//*[@id="col_1_row_11"]/span', # 进入填表界面
+                '//*[@id="col_2_row_6"]/div/div[2]/div', # 弹出省选择框
+                '//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[34]/div[1]/div/div/div[3]/div', # 选择浙江省
+                '//*[@id="col_3_row_6"]/div/div[2]/div', # 弹出市选择框
+                '//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[1]/div/div/div[3]/div', # 选择杭州市
+                '//*[@id="col_4_row_6"]/div/div[2]/div', # 弹出区域选择框
+                '//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[6]/div[1]/div/div/div[3]/div', # 选择江干区
+                '//*[@id="col_2_row_15"]/div/div/div/div/div[1]/div/div[2]', # 健康
+                '//*[@id="col_2_row_17"]/div/div/div/div/div[1]/div/div[1]', # 37摄氏度
+                '//*[@id="col_2_row_18"]/div/div/div/div/div[1]/div/div[2]', # 37摄氏度
+                '//*[@id="col_4_row_25"]/div/div/div/div/div[1]/div/div[1]', # 杭州健康码
+                '//*[@id="col_4_row_26"]/div/div/div/div/div[1]/div/div[2]', # 大数据通信卡
+                '//*[@id="col_4_row_27"]/div/div/div/div/div[2]/div/div[2]', # 28日内境外返回
+                '//*[@id="col_4_row_28"]/div/div/div/div/div[2]/div/div[2]', # 学生及同住家庭成员
+                '//*[@id="col_4_row_29"]/div/div/div/div/div[2]/div/div[2]', # 是否到过中高风险地区
+                '//*[@id="col_4_row_31"]/div/div/div/div/div[2]/div/div[2]', # 是否接触过
+                '//*[@id="col_4_row_33"]/div/div/div/div/div[1]/div/div[2]', # 是否做过核酸
+                '//*[@id="col_4_row_35"]/div/div/div/div/div[2]/div/div[2]', # 是否有症状
+                '//*[@id="col_4_row_37"]/div/div/div/div/div[2]/div/div[2]', # 是否离开居住城市
+                '//*[@id="col_4_row_39"]/div/div/div/div/div[2]/div/div[2]', # 是否从风险地区返回
             ]
             for work in workflow:
                 self.__get_element_by_xpath(work).click()
 
+
             detailed_area_input = self.__get_element_by_xpath('//*[@id="col_2_row_7"]/div/div[1]/div/input')
             detailed_area_input.send_keys('浙江理工大学')
 
-            submit_botton = self.__get_element_by_xpath('//*[@id="col_0_row_40"]/div/div/div/div/div')
+            submit_botton = self.__get_element_by_xpath('//*[@id="col_0_row_42"]/div/div/div/div/div')
             submit_botton.click()
-
+            import time
+            time.sleep(100)
             self.__get_element_by_xpath('//*[@id="col_1_row_11"]/span')
         except:
             return False
