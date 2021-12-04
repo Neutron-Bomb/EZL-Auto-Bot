@@ -116,6 +116,7 @@ def main():
     smtp = smtplib.SMTP('smtp.qq.com', 587)
     smtp.starttls()
     enable_email = False
+    data = None
     with open('./email_config.json') as f:
         data = json.loads(f.read())
         enable_email = data['enabled']
