@@ -91,8 +91,6 @@ class HealthRep:
 
             submit_botton = self.__get_element_by_xpath('//*[@id="col_0_row_42"]/div/div/div/div/div')
             submit_botton.click()
-            import time
-            time.sleep(100)
             self.__get_element_by_xpath('//*[@id="col_1_row_11"]/span')
         except:
             return False
