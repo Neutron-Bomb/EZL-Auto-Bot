@@ -39,18 +39,17 @@ class HealthRep:
         try:
             urls = \
             [
-                'http://stu.zstu.edu.cn/webroot/decision/url/mobile?redirect=http%3A%2F%2Fstu.zstu.edu.cn%2Fwebroot%2Fdecision%2Furl%2Fmobile%23%2Fmain%2Fhome#/login',
-                'http://stu3.zstu.edu.cn/webroot/decision/url/mobile?redirect=http%3A%2F%2Fstu.zstu.edu.cn%2Fwebroot%2Fdecision%2Furl%2Fmobile%23%2Fmain%2Fhome#/login'
+                'http://fangyi.zstu.edu.cn:6006/iForm/1817056F47E744D3B8488B'
             ]
             self.__client.get(choice(urls))
-            username_input = self.__get_element_by_xpath('//*[@id="app"]/div/div[1]/div/div/div/div/div/div/div/div[2]/div[2]/div[1]/div/input')
-            password_input = self.__get_element_by_xpath('//*[@id="app"]/div/div[1]/div/div/div/div/div/div/div/div[2]/div[2]/div[2]/div[1]/input')
-            login_button = self.__get_element_by_xpath('//*[@id="app"]/div/div[1]/div/div/div/div/div/div/div/div[2]/div[2]/div[4]')
+            username_input = self.__get_element_by_xpath('/html/body/app-root/app-right-root/div/div[2]/div[2]/div[2]/div[2]/div[1]/div/div[1]/app-login-normal/div/form/div[1]/nz-input-group/input')
+            password_input = self.__get_element_by_xpath('/html/body/app-root/app-right-root/div/div[2]/div[2]/div[2]/div[2]/div[1]/div/div[1]/app-login-normal/div/form/div[2]/nz-input-group/input')
+            login_button = self.__get_element_by_xpath('/html/body/app-root/app-right-root/div/div[2]/div[2]/div[2]/div[2]/div[1]/div/div[1]/app-login-normal/div/form/div[6]/div/button')
             username_input.send_keys(username)
             password_input.send_keys(password)
             login_button.click()
 
-            self.__get_element_by_xpath('//*[@id="app"]/div/div[1]/div/div/div/div[1]/div/div/div/div/div/div[1]/div/div/div/div[2]/div/div/div[3]/div/div/div[4]/div/div/div[3]')
+            self.__get_element_by_xpath('//*[@id="iform"]/div[1]/div[3]/form/div[4]/div/div/div[2]/div/div/div/div/div')
         except:
             return False
         else:
@@ -58,40 +57,30 @@ class HealthRep:
 
     def do(self) -> bool:
         try:
+
+            self.__client.execute_script('document.getElementsByClassName("van-field__control")[6].readOnly = false')
+            detailed_area_input = self.__get_element_by_xpath('//*[@id="iform"]/div[1]/div[3]/form/div[6]/div/div/div[2]/div/div/div/div[1]/input')
+            detailed_area_input.clear()
+            detailed_area_input.send_keys('浙江省 杭州市 钱塘区')
+
             workflow = \
             [
-                '//*[@id="app"]/div/div[1]/div/div/div/div[1]/div/div/div/div/div/div[1]/div/div/div/div[2]/div/div/div[3]/div/div/div[4]/div/div/div[3]', # 我要打卡
-                '//*[@id="col_1_row_11"]/span', # 进入填表界面
-                '//*[@id="col_2_row_6"]/div/div[2]/div', # 弹出省选择框
-                '//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[34]/div[1]/div/div/div[3]/div', # 选择浙江省
-                '//*[@id="col_3_row_6"]/div/div[2]/div', # 弹出市选择框
-                '//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[1]/div/div/div[3]/div', # 选择杭州市
-                '//*[@id="col_4_row_6"]/div/div[2]/div', # 弹出区域选择框
-                '//*[@id="app"]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div/div[6]/div[1]/div/div/div[3]/div', # 选择江干区
-                '//*[@id="col_2_row_15"]/div/div/div/div/div[1]/div/div[2]', # 健康
-                '//*[@id="col_2_row_17"]/div/div/div/div/div[1]/div/div[1]', # 37摄氏度
-                '//*[@id="col_2_row_18"]/div/div/div/div/div[1]/div/div[2]', # 37摄氏度
-                '//*[@id="col_4_row_25"]/div/div/div/div/div[1]/div/div[1]', # 杭州健康码
-                '//*[@id="col_4_row_26"]/div/div/div/div/div[1]/div/div[2]', # 大数据通信卡
-                '//*[@id="col_4_row_27"]/div/div/div/div/div[2]/div/div[2]', # 28日内境外返回
-                '//*[@id="col_4_row_28"]/div/div/div/div/div[2]/div/div[2]', # 学生及同住家庭成员
-                '//*[@id="col_4_row_29"]/div/div/div/div/div[2]/div/div[2]', # 是否到过中高风险地区
-                '//*[@id="col_4_row_31"]/div/div/div/div/div[2]/div/div[2]', # 是否接触过
-                '//*[@id="col_4_row_33"]/div/div/div/div/div[1]/div/div[2]', # 是否做过核酸
-                '//*[@id="col_4_row_35"]/div/div/div/div/div[2]/div/div[2]', # 是否有症状
-                '//*[@id="col_4_row_37"]/div/div/div/div/div[2]/div/div[2]', # 是否离开居住城市
-                '//*[@id="col_4_row_39"]/div/div/div/div/div[2]/div/div[2]', # 是否从风险地区返回
+                '//*[@id="iform"]/div[1]/div[3]/form/div[7]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 低风险
+                '//*[@id="iform"]/div[1]/div[3]/form/div[8]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 在校内
+                '//*[@id="iform"]/div[1]/div[3]/form/div[9]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 健康状况
+                '//*[@id="iform"]/div[1]/div[3]/form/div[10]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 绿码
+                '//*[@id="iform"]/div[1]/div[3]/form/div[11]/div/div/div[2]/div/div/div/div[1]/div/div[2]/span', # 已完成首轮全部
+                '//*[@id="iform"]/div[1]/div[3]/form/div[12]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 无密切接触
+                '//*[@id="iform"]/div[1]/div[3]/form/div[13]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 未隔离
+                '//*[@id="iform"]/div[1]/div[3]/form/div[14]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 无省外旅行史
+                '//*[@id="iform"]/div[1]/div[3]/form/div[15]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 家人无风险地区旅行史
             ]
             for work in workflow:
                 self.__get_element_by_xpath(work).click()
 
-
-            detailed_area_input = self.__get_element_by_xpath('//*[@id="col_2_row_7"]/div/div[1]/div/input')
-            detailed_area_input.send_keys('浙江理工大学')
-
-            submit_botton = self.__get_element_by_xpath('//*[@id="col_0_row_42"]/div/div/div/div/div')
-            submit_botton.click()
-            self.__get_element_by_xpath('//*[@id="col_1_row_11"]/span')
+            self.__get_element_by_xpath('//*[@id="iform"]/div[1]/div[4]/div/button[1]').click()
+            self.__get_element_by_xpath('/html/body/div[3]/div[3]/button[2]').click()
+            self.__get_element_by_xpath('/html/body/img')
         except:
             return False
         else:
@@ -108,7 +97,7 @@ def main():
                         ,format="%(asctime)s %(message)s"
                         ,datefmt="%Y-%m-%d %H:%M:%S")
                         
-    parser = argparse.ArgumentParser(description='自动完成E浙理打卡')
+    parser = argparse.ArgumentParser(description='自动完成健康打卡')
     parser.add_argument('--gui', action='store_true', default=False, help='显示Chrome窗口')
     parser.add_argument('--chromedriver_logging', action='store_true', default=False, help='启用ChromeDriver的日志')
     args = parser.parse_args()
