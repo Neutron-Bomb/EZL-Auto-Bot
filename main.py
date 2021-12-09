@@ -105,11 +105,10 @@ def main():
     smtp = smtplib.SMTP('smtp.qq.com', 587)
     smtp.starttls()
     enable_email = False
-    data = None
     with open('./email_config.json') as f:
-        data = json.loads(f.read())
-        enable_email = data['enabled']
-        smtp.login(data['address'], data['password']) if enable_email else None
+        email_config = json.loads(f.read())
+        enable_email = email_config['enabled']
+        smtp.login(email_config['address'], email_config['password']) if enable_email else None
         smtp.close() if not enable_email else None
 
     hr = HealthRep(gui=args.gui, chromedriver_logging=args.chromedriver_logging)
@@ -129,7 +128,7 @@ def main():
                 if enable_email:
                     email = MIMEText('今天不用你动手啦！')
                     email['Subject'] = '打卡成功啦！'
-                    email['From'] = data['address']
+                    email['From'] = email_config['address']
                     email['To'] = user['email']
                     smtp.sendmail(email['From'], email['To'], email.as_string())
             else:
@@ -142,7 +141,7 @@ def main():
             if enable_email:    
                 email = MIMEText('今天需要自己打卡了呢！')
                 email['Subject'] = '尝试了很多次，打卡还是失败了！'
-                email['From'] = data['address']
+                email['From'] = email_config['address']
                 email['To'] = user['email']
                 smtp.sendmail(email['From'], email['To'], email.as_string())
                 logging.info('A email has been sent to {}({})'.format(user['username'], user['email']))
