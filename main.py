@@ -74,6 +74,7 @@ class HealthRep:
                 '//*[@id="iform"]/div[1]/div[3]/form/div[13]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 未隔离
                 '//*[@id="iform"]/div[1]/div[3]/form/div[14]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 无省外旅行史
                 '//*[@id="iform"]/div[1]/div[3]/form/div[15]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 家人无风险地区旅行史
+                '//*[@id="iform"]/div[1]/div[3]/form/div[16]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span',
             ]
             for work in workflow:
                 self.__get_element_by_xpath(work).click()
