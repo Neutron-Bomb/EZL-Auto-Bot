@@ -66,7 +66,7 @@ class HealthRep:
             detailed_area_input = self.__get_element_by_xpath('//*[@id="iform"]/div[1]/div[3]/form/div[6]/div/div/div[2]/div/div/div/div[1]/input')
             detailed_area_input.clear()
             detailed_area_input.send_keys('浙江省 杭州市 钱塘区')
-
+            # 因为数据有自动填充，所以这一段不需要了
             # workflow = \
             # [
             #     '//*[@id="iform"]/div[1]/div[3]/form/div[7]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 低风险
