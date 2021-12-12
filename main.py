@@ -1,12 +1,15 @@
 import argparse
+import datetime
 import json
 import logging
 import os
 import smtplib
+import time
 from email.mime.text import MIMEText
 from queue import Queue
 from random import choice
 
+import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -35,6 +38,7 @@ class HealthRep:
         return self.__wait.until(EC.presence_of_element_located((By.XPATH,xpath)))
 
     def login(self, username:str, password:str) -> bool:
+        self.__username = username
         self.__flag = False
         try:
             urls = \
@@ -63,29 +67,38 @@ class HealthRep:
             detailed_area_input.clear()
             detailed_area_input.send_keys('浙江省 杭州市 钱塘区')
 
-            workflow = \
-            [
-                '//*[@id="iform"]/div[1]/div[3]/form/div[7]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 低风险
-                '//*[@id="iform"]/div[1]/div[3]/form/div[8]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 在校内
-                '//*[@id="iform"]/div[1]/div[3]/form/div[9]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 健康状况
-                '//*[@id="iform"]/div[1]/div[3]/form/div[10]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 绿码
-                '//*[@id="iform"]/div[1]/div[3]/form/div[11]/div/div/div[2]/div/div/div/div[1]/div/div[2]/span', # 已完成首轮全部
-                '//*[@id="iform"]/div[1]/div[3]/form/div[12]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 无密切接触
-                '//*[@id="iform"]/div[1]/div[3]/form/div[13]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 未隔离
-                '//*[@id="iform"]/div[1]/div[3]/form/div[14]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 无省外旅行史
-                '//*[@id="iform"]/div[1]/div[3]/form/div[15]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 家人无风险地区旅行史
-            ]
-            for work in workflow:
-                self.__get_element_by_xpath(work).click()
+            # workflow = \
+            # [
+            #     '//*[@id="iform"]/div[1]/div[3]/form/div[7]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 低风险
+            #     '//*[@id="iform"]/div[1]/div[3]/form/div[8]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 在校内
+            #     '//*[@id="iform"]/div[1]/div[3]/form/div[9]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 健康状况
+            #     '//*[@id="iform"]/div[1]/div[3]/form/div[10]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 绿码
+            #     '//*[@id="iform"]/div[1]/div[3]/form/div[11]/div/div/div[2]/div/div/div/div[1]/div/div[2]/span', # 已完成首轮全部
+            #     '//*[@id="iform"]/div[1]/div[3]/form/div[12]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 无密切接触
+            #     '//*[@id="iform"]/div[1]/div[3]/form/div[16]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 未隔离
+            #     '//*[@id="iform"]/div[1]/div[3]/form/div[17]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 无省外旅行史
+            #     '//*[@id="iform"]/div[1]/div[3]/form/div[18]/div/div/div[2]/div/div/div/div[1]/div/div[1]/span', # 家人无风险地区旅行史
+            # ]
+            # for work in workflow:
+            #     self.__get_element_by_xpath(work).click()
 
             self.__get_element_by_xpath('//*[@id="iform"]/div[1]/div[4]/div/button[1]').click()
             self.__get_element_by_xpath('/html/body/div[3]/div[3]/button[2]').click()
-            self.__get_element_by_xpath('/html/body/img')
+            if not self.check():
+                raise RuntimeError("打卡貌似没有成功")
         except:
             return False
         else:
             self.__flag = True
             return True
+
+    def check(self) -> bool:
+        url = 'http://fangyi.zstu.edu.cn:5004/api/DataSource/GetDataSourceByNo?sqlNo=JTDK_XS${}'
+        res = json.loads(requests.get(url.format(self.__username)).text)
+        unix_dtime = int(time.mktime(datetime.date.today().timetuple()))
+        print(res['data'][0]['CURRENTDATE'])
+        unix_ctime = int(time.mktime(time.strptime(res['data'][0]['CURRENTDATE'], '%Y-%m-%d %H:%M:%S')))
+        return True if unix_dtime <= unix_ctime else False
 
     def status(self) -> bool:
         return self.__flag
