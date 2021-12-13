@@ -84,8 +84,10 @@ class HealthRep:
 
             self.__get_element_by_xpath('//*[@id="iform"]/div[1]/div[4]/div/button[1]').click()
             self.__get_element_by_xpath('/html/body/div[3]/div[3]/button[2]').click()
+            
             if not self.check():
-                raise RuntimeError("打卡貌似没有成功")
+                raise RuntimeError("E")
+
         except:
             return False
         else:
@@ -95,10 +97,27 @@ class HealthRep:
     def check(self) -> bool:
         url = 'http://fangyi.zstu.edu.cn:5004/api/DataSource/GetDataSourceByNo?sqlNo=JTDK_XS${}'
         res = json.loads(requests.get(url.format(self.__username)).text)
+        logging.info('Checking data:{}'.format(res))
+        if len(res['data']) == 0:
+            return False
         unix_dtime = int(time.mktime(datetime.date.today().timetuple()))
-        print(res['data'][0]['CURRENTDATE'])
         unix_ctime = int(time.mktime(time.strptime(res['data'][0]['CURRENTDATE'], '%Y-%m-%d %H:%M:%S')))
+        logging.info('unix_dtime: {}, unix_ctime:{}'.format(unix_dtime, unix_ctime))
         return True if unix_dtime <= unix_ctime else False
+    
+    def static_check(username: str) -> bool:
+        url = 'http://fangyi.zstu.edu.cn:5004/api/DataSource/GetDataSourceByNo?sqlNo=JTDK_XS${}'
+        res = json.loads(requests.get(url.format(username)).text)
+        logging.info('Checking data:{}'.format(res))
+        if len(res['data']) == 0:
+            return False
+        unix_dtime = int(time.mktime(datetime.date.today().timetuple()))
+        unix_ctime = int(time.mktime(time.strptime(res['data'][0]['CURRENTDATE'], '%Y-%m-%d %H:%M:%S')))
+        logging.info('unix_dtime: {}, unix_ctime:{}'.format(unix_dtime, unix_ctime))
+        return True if unix_dtime <= unix_ctime else False
+
+    def destruct(self):
+        self.__client.quit()
 
     def status(self) -> bool:
         return self.__flag
@@ -135,6 +154,12 @@ def main():
                 break
 
             user = tasks.get()
+            if HealthRep.static_check(user['username']):
+                logging.info('The user {} has already clocked in'.format(user['username']))
+                continue
+            else:
+                logging.info('Start report for user {}'.format(user['username']))
+
             if hr.login(user['username'],user['password']) and hr.do():
                 logging.info('succeed: {}'.format(user['username']))
                 max_try -= 10
@@ -148,17 +173,19 @@ def main():
                 logging.info('failed: {}'.format(user['username']))
                 max_try -= 1
                 tasks.put(user)
+            logging.info('Check user {}\'s flag: {}'.format(user['username'], str(hr.check())))
 
         while not tasks.empty():
             user = tasks.get()
             if enable_email:    
-                email = MIMEText('今天需要自己打卡了呢！')
-                email['Subject'] = '尝试了很多次，打卡还是失败了！'
+                email = MIMEText('今天可能需要自己打卡了呢！')
+                email['Subject'] = '尝试了很多次，可能成功了，也可能失败了，还是打开看看吧。'
                 email['From'] = email_config['address']
                 email['To'] = user['email']
                 smtp.sendmail(email['From'], email['To'], email.as_string())
                 logging.info('A email has been sent to {}({})'.format(user['username'], user['email']))
 
+    hr.destruct()
     smtp.close()
 
 if __name__ == '__main__':
